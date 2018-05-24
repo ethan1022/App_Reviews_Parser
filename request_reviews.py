@@ -62,56 +62,61 @@ def send_slack_message(dic):
 			% (postResponse.status_code, postResponse.text)
 			)
 
-def paring_data(data):
-	name = data["entry"][1]["author"]["name"]["label"]
-	version = data["entry"][1]["im:version"]["label"]
-	rate = data["entry"][1]["im:rating"]["label"]
-	identifier = data["entry"][1]["id"]["label"]
-	content = data["entry"][1]["content"]["label"]
+def paring_data(data, index):
+	name = data[index]["author"]["name"]["label"]
+	version = data[index]["im:version"]["label"]
+	rate = data[index]["im:rating"]["label"]
+	identifier = data[index]["id"]["label"]
+	content = data[index]["content"]["label"]
 	dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content}
 	return dic
 
 def get_request_data(link):
 	getResponse = requests.get(url=link)
-	dic = paring_data(json.loads(getResponse.text)["feed"])
-	return dic
+	array = json.loads(getResponse.text)["feed"]["entry"]
+	return array
+
+def new_review_check(array, which_country):
+	global check_index
+	review_dic = paring_data(array, check_index)
+	current_id = review_dic["identifier"]
+	
+	if path.exists("review_id_"+ which_country +".txt"):
+		f = open("review_id_"+ which_country +".txt", "r")
+		if f.mode == "r":
+			content = f.read()
+			f = open("review_id_"+ which_country +".txt", "w")
+			if content == "":
+				f.write(current_id)
+			else:
+				if content != current_id:
+					send_slack_message(review_dic)
+					check_index = check_index + 1
+					new_review_check(array, which_country)
+				else:
+					check_index = 1
+					newest_dic = paring_data(array, check_index)
+					f.write(str(newest_dic["identifier"]))
+	else:
+		f=open("review_id_"+ which_country +".txt", "w+")
+		f.write(current_id)
+		send_slack_message(review_dic)
+
+
 
 init_dict = init()
+
+check_index = 1
+
 app_reviews_rss_link_tw = init_dict["app_review_rss_link_tw"]
 app_reviews_rss_link_jp = init_dict["app_review_rss_link_jp"]
 app_reviews_rss_link_us = init_dict["app_review_rss_link_us"]
 slack_webhook = init_dict["slack_webhook"]
 
-dic_tw = get_request_data(app_reviews_rss_link_tw)
-dic_jp = get_request_data(app_reviews_rss_link_jp)
-dic_us = get_request_data(app_reviews_rss_link_us)
+review_tw_array = get_request_data(app_reviews_rss_link_tw)
+review_jp_array = get_request_data(app_reviews_rss_link_jp)
+review_us_array = get_request_data(app_reviews_rss_link_us)
 
-id_dic = {
-		   "tw":dic_tw["identifier"],
-		   "jp":dic_jp["identifier"],
-		   "us":dic_us["identifier"]
-	     }
-
-if path.exists("review_id.txt"):
-	f=open("review_id.txt","r")
-	if f.mode == "r":
-		content=f.read()
-		f=open("review_id.txt","w")
-		if content == "":
-			f.write(str(id_dic))
-		else:
-			if content != str(id_dic):
-				content_dict = json.loads(content)
-				if content_dict["tw"] != id_dic["tw"]:
-					send_slack_message(dic_tw)
-				if content_dict["jp"] != id_dic["jp"]:
-					send_slack_message(dic_jp)
-				if content_dict["us"] != id_dic["us"]:
-					send_slack_message(dic_us)
-				f.write(str(id_dic))
-else:
-	f=open("review_id.txt", "w+")
-	f.write(str(id_dic))
-	send_slack_message(dic_tw)
-	send_slack_message(dic_jp)
-	send_slack_message(dic_us)
+new_review_check(review_tw_array, "tw")
+new_review_check(review_jp_array, "jp")
+new_review_check(review_us_array, "us")
