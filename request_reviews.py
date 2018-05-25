@@ -25,6 +25,7 @@ def message(dic, which_country):
 	for i in range(rate):
 		rate_str = rate_str + ":star: "
 	message = {
+				"icon_emoji": ":apple-icon:"
 				"attachments" : [
 					{
 						"color":color,
@@ -38,13 +39,13 @@ def message(dic, which_country):
 								"short":"true"
 							},
 							{
+								"title":"App Name",
+								"value":dic["app_name"],
+								"short":"true"
+							}
+							{
 								"title":"Country",
 								"value":which_country,
-								"short":"true"
-							},
-							{
-								"title":"id",
-								"value":dic["identifier"],
 								"short":"true"
 							}
 						]
@@ -68,12 +69,13 @@ def send_slack_message(dic, which_country):
 			)
 
 def paring_data(data, index):
+	app_name = data[0]["im:name"]["label"]
 	name = data[index]["author"]["name"]["label"]
 	version = data[index]["im:version"]["label"]
 	rate = data[index]["im:rating"]["label"]
 	identifier = data[index]["id"]["label"]
 	content = data[index]["content"]["label"]
-	dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content}
+	dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content, "app_name":app_name}
 	return dic
 
 def get_request_data(link):
@@ -113,15 +115,22 @@ init_dict = init()
 
 check_index = 1
 
-app_reviews_rss_link_tw = init_dict["app_review_rss_link_tw"]
-app_reviews_rss_link_jp = init_dict["app_review_rss_link_jp"]
-app_reviews_rss_link_us = init_dict["app_review_rss_link_us"]
+app_review_rss_link_tw = init_dict["app_review_rss_link_tw"]
+app_review_rss_link_jp = init_dict["app_review_rss_link_jp"]
+app_review_rss_link_us = init_dict["app_review_rss_link_us"]
+app_review_rss_link_au = init_dict["app_review_rss_link_au"]
+app_review_rss_link_cn = init_dict["app_review_rss_link_cn"]
+
 slack_webhook = init_dict["slack_webhook"]
 
-review_tw_array = get_request_data(app_reviews_rss_link_tw)
-review_jp_array = get_request_data(app_reviews_rss_link_jp)
-review_us_array = get_request_data(app_reviews_rss_link_us)
+review_tw_array = get_request_data(app_review_rss_link_tw)
+review_jp_array = get_request_data(app_review_rss_link_jp)
+review_us_array = get_request_data(app_review_rss_link_us)
+review_au_array = get_request_data(app_review_rss_link_au)
+review_cn_array = get_request_data(app_review_rss_link_cn)
 
 new_review_check(review_tw_array, "tw")
 new_review_check(review_jp_array, "jp")
 new_review_check(review_us_array, "us")
+new_review_check(review_au_array, "au")
+new_review_check(review_cn_array, "cn")
