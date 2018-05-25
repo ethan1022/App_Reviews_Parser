@@ -25,7 +25,7 @@ def message(dic, which_country):
 	for i in range(rate):
 		rate_str = rate_str + ":star: "
 	message = {
-				"icon_emoji": ":apple-icon:"
+				"icon_emoji": ":apple-icon:",
 				"attachments" : [
 					{
 						"color":color,
@@ -42,7 +42,7 @@ def message(dic, which_country):
 								"title":"App Name",
 								"value":dic["app_name"],
 								"short":"true"
-							}
+							},
 							{
 								"title":"Country",
 								"value":which_country,
