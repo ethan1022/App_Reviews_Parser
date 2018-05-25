@@ -11,7 +11,7 @@ def init():
 		init_dict = json.loads(content)
 		return init_dict
 
-def message(dic):
+def message(dic, which_country):
 	rate = int(dic["rate"])
 	color = ""
 	if rate > 3:
@@ -38,6 +38,11 @@ def message(dic):
 								"short":"true"
 							},
 							{
+								"title":"Country",
+								"value":which_country,
+								"short":"true"
+							},
+							{
 								"title":"id",
 								"value":dic["identifier"],
 								"short":"true"
@@ -51,8 +56,8 @@ def message(dic):
 	return message
 
 
-def send_slack_message(dic):
-	post_data = message(dic)
+def send_slack_message(dic, which_country):
+	post_data = message(dic, which_country)
 	headers = {'Content-Type': 'application/json'}
 	postResponse = requests.post(url=slack_webhook, headers=headers, data=json.dumps(post_data))
 
@@ -90,7 +95,7 @@ def new_review_check(array, which_country):
 				f.write(current_id)
 			else:
 				if content != current_id:
-					send_slack_message(review_dic)
+					send_slack_message(review_dic, which_country)
 					check_index = check_index + 1
 					new_review_check(array, which_country)
 				else:
@@ -100,7 +105,7 @@ def new_review_check(array, which_country):
 	else:
 		f=open("review_id_"+ which_country +".txt", "w+")
 		f.write(current_id)
-		send_slack_message(review_dic)
+		send_slack_message(review_dic, which_country)
 
 
 
