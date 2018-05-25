@@ -1,15 +1,11 @@
+#!/usr/bin/env python3
+
 import requests
 import json
 import os.path
 
+from config import config
 from os import path
-
-def init():
-	file=open(".profile","r")
-	if file.mode == "r":
-		content = file.read()
-		init_dict = json.loads(content)
-		return init_dict
 
 def message(dic, which_country):
 	rate = int(dic["rate"])
@@ -109,28 +105,18 @@ def new_review_check(array, which_country):
 		f.write(current_id)
 		send_slack_message(review_dic, which_country)
 
-
-
-init_dict = init()
-
 check_index = 1
 
-app_review_rss_link_tw = init_dict["app_review_rss_link_tw"]
-app_review_rss_link_jp = init_dict["app_review_rss_link_jp"]
-app_review_rss_link_us = init_dict["app_review_rss_link_us"]
-app_review_rss_link_au = init_dict["app_review_rss_link_au"]
-app_review_rss_link_cn = init_dict["app_review_rss_link_cn"]
+app_review_rss_link_tw = config["app_review_rss_link_tw"]
+app_review_rss_link_jp = config["app_review_rss_link_jp"]
+app_review_rss_link_us = config["app_review_rss_link_us"]
 
-slack_webhook = init_dict["slack_webhook"]
+slack_webhook = config["slack_webhook"]
 
 review_tw_array = get_request_data(app_review_rss_link_tw)
 review_jp_array = get_request_data(app_review_rss_link_jp)
 review_us_array = get_request_data(app_review_rss_link_us)
-review_au_array = get_request_data(app_review_rss_link_au)
-review_cn_array = get_request_data(app_review_rss_link_cn)
 
 new_review_check(review_tw_array, "tw")
 new_review_check(review_jp_array, "jp")
 new_review_check(review_us_array, "us")
-new_review_check(review_au_array, "au")
-new_review_check(review_cn_array, "cn")
