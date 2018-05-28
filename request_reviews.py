@@ -3,6 +3,7 @@
 import requests
 import json
 import os.path
+import datetime
 
 from config import config
 from os import path
@@ -30,7 +31,7 @@ def message(dic, which_country):
 						"text":dic["content"],
 						"fields":[
 							{
-								"title":"version",
+								"title":"Version",
 								"value":dic["version"],
 								"short":"true"
 							},
@@ -42,6 +43,11 @@ def message(dic, which_country):
 							{
 								"title":"Country",
 								"value":which_country,
+								"short":"true"
+							},
+							{
+								"title":"Date",
+								"value":f"{datetime.datetime.now():%Y-%m-%d}",
 								"short":"true"
 							}
 						]
