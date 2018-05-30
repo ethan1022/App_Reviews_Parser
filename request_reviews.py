@@ -85,8 +85,8 @@ def get_request_data(link):
 	array = json.loads(getResponse.text)["feed"]["entry"]
 	return array
 
-def new_review_check(array, which_country):
-	global check_index
+def new_review_check(array, which_country, index):
+	check_index = index
 	review_dic = paring_data(array, check_index)
 	current_id = review_dic["identifier"]
 	
@@ -94,24 +94,21 @@ def new_review_check(array, which_country):
 		f = open("review_id_"+ which_country +".txt", "r")
 		if f.mode == "r":
 			content = f.read()
-			f = open("review_id_"+ which_country +".txt", "w")
 			if content == "":
 				f.write(current_id)
 			else:
 				if content != current_id:
 					send_slack_message(review_dic, which_country)
-					check_index = check_index + 1
-					new_review_check(array, which_country)
+					check_index += 1
+					new_review_check(array, which_country, check_index)
 				else:
-					check_index = 1
-					newest_dic = paring_data(array, check_index)
-					f.write(str(newest_dic["identifier"]))
+					newest_dic = paring_data(array, 1)
+					f=open("review_id_"+ which_country +".txt", "w")
+					f.write(newest_dic["identifier"])
 	else:
 		f=open("review_id_"+ which_country +".txt", "w+")
 		f.write(current_id)
 		send_slack_message(review_dic, which_country)
-
-check_index = 1
 
 app_review_rss_link_tw = config["app_review_rss_link_tw"]
 app_review_rss_link_jp = config["app_review_rss_link_jp"]
@@ -123,6 +120,6 @@ review_tw_array = get_request_data(app_review_rss_link_tw)
 review_jp_array = get_request_data(app_review_rss_link_jp)
 review_us_array = get_request_data(app_review_rss_link_us)
 
-new_review_check(review_tw_array, "tw")
-new_review_check(review_jp_array, "jp")
-new_review_check(review_us_array, "us")
+new_review_check(review_tw_array, "tw", 1)
+new_review_check(review_jp_array, "jp", 1)
+new_review_check(review_us_array, "us", 1)
