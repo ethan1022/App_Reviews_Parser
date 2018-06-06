@@ -82,7 +82,7 @@ class app_reviews_scanner(object):
 				% (postResponse.status_code, postResponse.text)
 				)
 
-	def paring_data(self, data, index):
+	def parsing_data(self, data, index):
 		app_name = data[0]["im:name"]["label"]
 		name = data[index]["author"]["name"]["label"]
 		version = data[index]["im:version"]["label"]
@@ -92,6 +92,16 @@ class app_reviews_scanner(object):
 		dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content, "app_name":app_name}
 		return dic
 
+	def parsing_one_data(self, data):
+		name = data["author"]["name"]["label"]
+		version = data["im:version"]["label"]
+		rate = data["im:rating"]["label"]
+		identifier = data["id"]["label"]
+		content = data["content"]["label"]
+		dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content}
+		return dic
+
+
 	def get_request_data(self, link):
 		getResponse = requests.get(url=link)
 		array = json.loads(getResponse.text)["feed"]["entry"]
@@ -99,7 +109,7 @@ class app_reviews_scanner(object):
 
 	def new_review_check(self, array, which_country, index):
 		check_index = index
-		review_dic = self.paring_data(array, check_index)
+		review_dic = self.parsing_data(array, check_index)
 		current_id = review_dic["identifier"]
 		
 		if path.exists("review_id_"+ which_country +".txt"):
@@ -110,13 +120,27 @@ class app_reviews_scanner(object):
 					f.write(current_id)
 				else:
 					if content != current_id:
-						self.send_slack_message(review_dic, which_country)
-						check_index += 1
-						self.new_review_check(array, which_country, check_index)
-					else:
-						newest_dic = self.paring_data(array, 1)
-						f=open("review_id_"+ which_country +".txt", "w")
-						f.write(newest_dic["identifier"])
+						new_review_index_array = []
+						for element in array:
+							perDic = self.parsing_one_data(element)
+							if content == perDic["identifier"]:
+								break
+							else:
+								new_review_index_array.append(array.index(element))
+
+						if len(new_review_index_array) != len(array):
+							for element in new_review_index_array:
+								new_review_dic = self.parsing_data(array, element)
+								self.send_slack_message(new_review_dic, which_country)
+							#check_index += 1
+							#self.new_review_check(array, which_country, check_index)
+							newest_dic = self.parsing_data(array, 1)
+							f=open("review_id_"+ which_country +".txt", "w")
+							f.write(newest_dic["identifier"])
+					#else:
+						#newest_dic = self.parsing_data(array, 1)
+						#f=open("review_id_"+ which_country +".txt", "w")
+						#f.write(newest_dic["identifier"])
 		else:
 			f=open("review_id_"+ which_country +".txt", "w+")
 			f.write(current_id)
