@@ -121,12 +121,13 @@ class app_reviews_scanner(object):
 				else:
 					if content != current_id:
 						new_review_index_array = []
-						for element in array:
-							perDic = self.parsing_one_data(element)
-							if content == perDic["identifier"]:
-								break
-							else:
-								new_review_index_array.append(array.index(element))
+						for index,element in enumerate(array):
+							if index != 0:
+								perDic = self.parsing_one_data(element)
+								if content == perDic["identifier"]:
+									break
+								else:
+									new_review_index_array.append(array.index(element))
 
 						if len(new_review_index_array) != len(array):
 							for element in new_review_index_array:
