@@ -129,7 +129,7 @@ class app_reviews_scanner(object):
 								else:
 									new_review_index_array.append(array.index(element))
 
-						if len(new_review_index_array) != len(array):
+						if len(new_review_index_array) != len(array) - 1:
 							for element in new_review_index_array:
 								new_review_dic = self.parsing_data(array, element)
 								self.send_slack_message(new_review_dic, which_country)
