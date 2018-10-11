@@ -48,11 +48,6 @@ class app_reviews_scanner(object):
 									"short":"true"
 								},
 								{
-									"title":"App Name",
-									"value":dic["app_name"],
-									"short":"true"
-								},
-								{
 									"title":"Country",
 									"value":which_country,
 									"short":"true"
@@ -83,13 +78,12 @@ class app_reviews_scanner(object):
 				)
 
 	def parsing_data(self, data, index):
-		app_name = data[0]["im:name"]["label"]
 		name = data[index]["author"]["name"]["label"]
 		version = data[index]["im:version"]["label"]
 		rate = data[index]["im:rating"]["label"]
 		identifier = data[index]["id"]["label"]
 		content = data[index]["content"]["label"]
-		dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content, "app_name":app_name}
+		dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content}
 		return dic
 
 	def parsing_one_data(self, data):
@@ -99,8 +93,7 @@ class app_reviews_scanner(object):
 		identifier = data["id"]["label"]
 		content = data["content"]["label"]
 		dic = {"name":name, "version":version, "rate":rate, "identifier":identifier, "content":content}
-		return dic
-
+		return dic	
 
 	def get_request_data(self, link):
 		getResponse = requests.get(url=link)
@@ -140,10 +133,6 @@ class app_reviews_scanner(object):
 							newest_dic = self.parsing_data(array, 1)
 							f=open("review_id_"+ which_country +".txt", "w")
 							f.write(newest_dic["identifier"])
-					#else:
-						#newest_dic = self.parsing_data(array, 1)
-						#f=open("review_id_"+ which_country +".txt", "w")
-						#f.write(newest_dic["identifier"])
 		else:
 			f=open("review_id_"+ which_country +".txt", "w+")
 			f.write(current_id)
