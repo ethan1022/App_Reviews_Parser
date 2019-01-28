@@ -8,7 +8,7 @@ You need to add a  `.profile`  file first, and add content inside the file. The 
 After doing that,  you can start to parse you App Store Reviews
 
 # 用 plist 和 executive file 來定期 run script 的方法
-### 建立plist檔案，以App-Reviews-Notifier.plist為例
+### 建立plist檔案，以AppReviewsNotifier.plist為例
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -47,7 +47,7 @@ After doing that,  you can start to parse you App Store Reviews
 最後在 command line 跑...
 ```
 launchctl setenv PATH /usr/local/bin:$PATH #設定要跑的PATH環境
-launchctl load ~/Library/LaunchAgents/App-Reviews-Notifier.plist #啟動plist
+launchctl load ~/Library/LaunchAgents/AppReviewsNotifier.plist #啟動plist
 ```
 
 #Learning/Program
