@@ -143,9 +143,9 @@ class app_reviews_scanner(object):
 		review_jp_array = self.get_request_data(self.app_review_rss_link_jp)
 		review_us_array = self.get_request_data(self.app_review_rss_link_us)
 
-		self.new_review_check(review_tw_array, "tw", 1)
-		self.new_review_check(review_jp_array, "jp", 1)
-		self.new_review_check(review_us_array, "us", 1)
+		self.new_review_check(review_tw_array, "tw", 0)
+		self.new_review_check(review_jp_array, "jp", 0)
+		self.new_review_check(review_us_array, "us", 0)
 
 if __name__ == "__main__":
 	app_reviews_scanner = app_reviews_scanner()
