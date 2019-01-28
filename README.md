@@ -49,5 +49,3 @@ After doing that,  you can start to parse you App Store Reviews
 launchctl setenv PATH /usr/local/bin:$PATH #設定要跑的PATH環境
 launchctl load ~/Library/LaunchAgents/AppReviewsNotifier.plist #啟動plist
 ```
-
-#Learning/Program
